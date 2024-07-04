@@ -10,6 +10,7 @@ from transliterate import translit
 from num2words import num2words
 import re
 
+file_name = 'res/tmp/output.wav'
 
 class NeuralSpeaker:
     def __init__(self, language='ru'):
@@ -55,7 +56,6 @@ class NeuralSpeaker:
         audio *= 32767 / np.max(np.abs(audio))
         audio = audio.astype(np.int16)
 
-        file_name = 'res/tmp/output.wav'
         if not os.path.exists('res/tmp/'):
             os.makedirs('res/tmp/')
         with wave.open(file_name, 'w') as wf:
@@ -73,3 +73,14 @@ class NeuralSpeaker:
         pygame.mixer.music.unload()
 
         return
+
+    def runAudioFile(self):
+        try:
+            pygame.mixer.init()
+            pygame.mixer.music.load(file_name)
+            pygame.mixer.music.play()
+            while pygame.mixer.music.get_busy():
+                pass
+            pygame.mixer.music.unload()
+        except Exception as e:
+            print(f"Exception while reading audio file : {e}")

@@ -24,6 +24,7 @@ class GuiController():
         # Path to your Tesseract executable (you may not need to set this if Tesseract is in your system PATH)
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
         keyboard.add_hotkey('ctrl+t', self.on_ctrl_t)
+        keyboard.add_hotkey('ctrl+l', self.on_ctrl_l)
         keyboard.add_hotkey('shift+t', self.on_shift_t)
         self.overlay = overlay.OverlayApp()
 
@@ -43,9 +44,16 @@ class GuiController():
         print("*** Starting input window thread ***")
         threading.Thread(target=self.show_input_window).start()
 
+    def on_ctrl_l(self):
+        print("*** Starting input window thread ***")
+        threading.Thread(target=self.listen_last_translation).start()
+
     def on_shift_t(self):
         print("*** Starting mouse position recording thread ***")
         threading.Thread(target=self.record_mouse_on_ctrl).start()
+
+    def listen_last_translation(self):
+        self.speaker.runAudioFile()
 
     def show_input_window(self):
         global input_text
