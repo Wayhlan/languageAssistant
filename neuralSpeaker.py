@@ -5,12 +5,20 @@ import time
 import torch
 import numpy as np
 import wave
-import pygame
+from pygame import mixer
+from pydub import AudioSegment
 from transliterate import translit
 from num2words import num2words
 import re
 
 file_name = 'res/tmp/output.wav'
+slowed_file_name = 'res/tmp/slowed_output.wav'
+
+def speed_change(sound, speed=1.0):
+    sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={
+        "frame_rate": int(sound.frame_rate * speed)
+    })
+    return sound_with_altered_frame_rate.set_frame_rate(sound.frame_rate)
 
 class NeuralSpeaker:
     def __init__(self, language='ru'):
@@ -65,22 +73,27 @@ class NeuralSpeaker:
             wf.writeframes(audio.tobytes())
             wf.close()
 
-        pygame.mixer.init()
-        pygame.mixer.music.load(file_name)
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
+        mixer.init()
+        mixer.music.load(file_name)
+        mixer.music.play()
+        while mixer.music.get_busy():
             pass
-        pygame.mixer.music.unload()
-
+        mixer.music.unload()
+        mixer.quit()
         return
 
     def runAudioFile(self):
         try:
-            pygame.mixer.init()
-            pygame.mixer.music.load(file_name)
-            pygame.mixer.music.play()
-            while pygame.mixer.music.get_busy():
+            audio_object = AudioSegment.from_file(file_name)
+            slowed_audio = speed_change(audio_object, 0.9)
+            slowed_audio.export(slowed_file_name, format="wav")
+
+            mixer.init()
+            mixer.music.load(slowed_file_name)
+            mixer.music.play()
+            while mixer.music.get_busy():
                 pass
-            pygame.mixer.music.unload()
+            mixer.music.unload()
+            mixer.quit()
         except Exception as e:
             print(f"Exception while reading audio file : {e}")
