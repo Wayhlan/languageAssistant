@@ -18,7 +18,7 @@ def speak_translations_from_dictionnary(dictionnary, speaker):
 
 def main():
     m_gui_ctrl = gui.GuiController()
-    print("Ready !\nPress Ctrl+T to show input window. Press '+' to exit.")
+    print("Ready !\nPress Ctrl+T to show input text window.\nPress Shift+T to use mouse position.\n Press '+' to exit.")
     keyboard.wait('+')
 
 if __name__ == "__main__":

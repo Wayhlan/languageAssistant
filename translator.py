@@ -35,6 +35,7 @@ class Translator:
             json.dump(translations, f, ensure_ascii=False, indent=4)
 
     def translate_text(self, text):
+        text = text.lower()
         translations = self.load_translations()
         if text not in translations:
             try:
