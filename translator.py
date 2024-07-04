@@ -34,12 +34,22 @@ class Translator:
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(translations, f, ensure_ascii=False, indent=4)
 
-    def translate_text(self, text, translations):
+    def translate_text(self, text):
+        translations = self.load_translations()
         if text not in translations:
             try:
                 translation = self.translate(text)
                 translations[text] = translation
+                self.save_translations(translations)
             except Exception as e:
                 print(f"Error translating text '{text}': {e}")
                 return None
-        return translations[text], translations
+        return translations[text]
+    
+    def print_all_translations(self):
+        translations = self.load_translations()
+        for russian, english in translations.items():
+            if english:
+                print(f"{russian} -> {english}")
+            else:
+                print(f"{russian} -> Translation failed")
