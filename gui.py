@@ -2,7 +2,7 @@ import os
 import keyboard
 import tkinter as tk
 import threading
-# from queue import Queue
+from queue import Queue
 import pyautogui
 from pynput import keyboard as kb
 import pytesseract
@@ -18,7 +18,7 @@ is_ctrl_pressed = False
 
 class GuiController():
     def __init__(self):
-        # self.input_queue = Queue()
+        self.input_queue = Queue()
         self.translator = translator.Translator()
         self.speaker = neuralSpeaker.NeuralSpeaker()
         # Path to your Tesseract executable (you may not need to set this if Tesseract is in your system PATH)
@@ -31,21 +31,20 @@ class GuiController():
 
     def closeOverlay(self):
         self.overlay.close_overlay()
-    def openOverlay(self, text):
-        self.overlay.open_overlay_threaded(text)
+    def openOverlay(self, text, location=None):
+        self.overlay.open_overlay_threaded(text, location)
 
     def setOverlayText(self, text):
         self.overlay.set_label_text(text)
 
-    # def getQueue(self):
-    #     return self.input_queue
+    def getQueue(self):
+        return self.input_queue
 
     def on_ctrl_t(self):
         print("*** Starting input window thread ***")
         threading.Thread(target=self.show_input_window).start()
 
     def on_ctrl_l(self):
-        print("*** Starting input window thread ***")
         threading.Thread(target=self.listen_last_translation).start()
 
     def on_shift_t(self):
@@ -60,11 +59,7 @@ class GuiController():
         def on_ok():
             global input_text
             input_text = entry_var.get()
-            # self.input_queue.put(input_text)
-            print(f'You entered: {input_text}')
-            translation = self.translator.translate_text(input_text)
-            print(f"Translation : {translation}")
-            self.speaker.speak(input_text)
+            self.input_queue.put((input_text, None))
             root.destroy()
 
         root = tk.Tk()
@@ -103,15 +98,13 @@ class GuiController():
                 print(f'Stop Position: {stop_position}')
                 is_ctrl_pressed = False
 
-                screenshot = pyautogui.screenshot(region=(start_position[0], start_position[1], stop_position[0] - start_position[0], stop_position[1] - start_position[1]))
+                location = (start_position[0], start_position[1], stop_position[0] - start_position[0], stop_position[1] - start_position[1])
+
+                screenshot = pyautogui.screenshot(region=location)
                 screenshot.save('res/tmp/dbg_screen.jpg')
                 input_text = pytesseract.image_to_string(screenshot, config=tesseract_custom_config, lang='rus')
                 if not input_text: return False
-                # self.input_queue.put(input_text)
-                print(f'Captured text: {input_text}')
-                translation = self.translator.translate_text(input_text)
-                print(f"Translation : {translation}")
-                self.speaker.speak(input_text)
+                self.input_queue.put((input_text, location))
                 return False
         except AttributeError:
             pass
@@ -121,8 +114,3 @@ class GuiController():
     def record_mouse_on_ctrl(self):
         with kb.Listener(on_press=self.on_press, on_release=self.on_release) as listener:
             listener.join()
-
-# def on_ctrl_c():
-#     print('You pressed CTRL+C! Exiting gracefully...')
-#     os._exit(0)
-# keyboard.add_hotkey('ctrl+c', on_ctrl_c)
