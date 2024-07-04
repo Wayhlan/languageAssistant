@@ -9,6 +9,7 @@ import pytesseract
 
 import translator
 import neuralSpeaker
+import overlay
 
 tesseract_custom_config = r'--oem 1' # --psm 7' # -c tessedit_char_whitelist=-[],0123456789'
 start_position = None
@@ -24,6 +25,16 @@ class GuiController():
         pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
         keyboard.add_hotkey('ctrl+t', self.on_ctrl_t)
         keyboard.add_hotkey('shift+t', self.on_shift_t)
+        self.overlay = overlay.OverlayApp()
+
+
+    def closeOverlay(self):
+        self.overlay.close_overlay()
+    def openOverlay(self, text):
+        self.overlay.open_overlay_threaded(text)
+
+    def setOverlayText(self, text):
+        self.overlay.set_label_text(text)
 
     # def getQueue(self):
     #     return self.input_queue

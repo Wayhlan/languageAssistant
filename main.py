@@ -1,5 +1,6 @@
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
+import os
 import random
 import keyboard
 
@@ -19,7 +20,10 @@ def speak_translations_from_dictionnary(dictionnary, speaker):
 def main():
     m_gui_ctrl = gui.GuiController()
     print("Ready !\nPress Ctrl+T to show input text window.\nPress Shift+T to use mouse position.\n Press '+' to exit.")
+    # m_gui_ctrl.openOverlay("Please work")
     keyboard.wait('+')
+    # m_gui_ctrl.closeOverlay()
+    os._exit(0)
 
 if __name__ == "__main__":
     main()
