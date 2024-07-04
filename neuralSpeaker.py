@@ -18,9 +18,9 @@ class NeuralSpeaker:
         start = time.time()
         device = torch.device('cpu')
         torch.set_num_threads(4)
-        local_file = f'res/{language}_speaker_model.pt'
+        local_file = f'res/v4_{language}.pt'
         if not os.path.isfile(local_file):
-            torch.hub.download_url_to_file('https://models.silero.ai/models/tts/ru/v3_1_ru.pt',
+            torch.hub.download_url_to_file('https://models.silero.ai/models/tts/ru/v4_ru.pt',
                                            local_file)
         self.__model = torch.package.PackageImporter(local_file).load_pickle("tts_models", "model")
         self.__model.to(device)
