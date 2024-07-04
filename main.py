@@ -1,6 +1,9 @@
 import sys
 sys.stdout.reconfigure(encoding='utf-8')
 import os
+current_path = os.environ.get('PATH')
+ffmpeg_path = os.path.join(os.getcwd(), r"libs/ffmpeg/bin")
+os.environ['PATH'] = ffmpeg_path + os.pathsep + current_path
 import random
 import keyboard
 
